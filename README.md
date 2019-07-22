@@ -1,13 +1,13 @@
 # Project 2: Flack
 
-This project utilizes python, handlebars, JavaScript, Socket.io and uses python libraries like Flask, render_template, flask_socketio. This objective behind this project was to learn how we could make single page application. 
+This project utilizes python, handlebars, JavaScript, Socket.io and uses python libraries like Flask, render_template, flask_socketio. This objective behind this project was to learn how we could make single page application.
 
 # Requirements
 https://cs50.harvard.edu/web/2019/summer/projects/2/#requirements
 
 ## Getting Started
 This is a simple chat application inspired by Slack. It utilizes socket.io for sending and receiving messages.
-There is no database setup needed. All data is stored in a global dict- channels. 
+There is no database setup needed. All data is stored in a global dict- channels.
 
 ### Prerequisites
 
@@ -28,7 +28,7 @@ export SECRET_KEY=my_cust_secret_key
 * Login and Logout
 * Channel Creation
 * View all channel list
-* View max upto 100 messages
+* View max up to 100 messages
 * Send message in any channel
 * View users present/viewing that channel
 * Message count in each channel
@@ -42,7 +42,7 @@ export SECRET_KEY=my_cust_secret_key
 
 ## Tools and frameworks used to build
 
-* [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea/) - The IDE used for development and code styling/formatting. 
+* [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea/) - The IDE used for development and code styling/formatting.
 * [iTerm2](https://www.iterm2.com/) - Terminal
 * [Bootstrap v4.3.1](https://getbootstrap.com/) - Used this primarily for styling.
 * [font-awesome v4.7](https://fontawesome.com/v4.7.0/) - Used to show icons
@@ -50,8 +50,8 @@ export SECRET_KEY=my_cust_secret_key
 * Flask 1.1.1
 * Jinja2 - layout template
 * SocketIO 2.2 - to send and receive messages to and from server
-* handlebars.js 4.1.2 - for templating using javascript.
-* SASS - to convert scss to css
+* handlebars.js 4.1.2 - for templating using JavaScript.
+* SASS - to convert SCSS to CSS
 
 ## Some sample screenshots
 ##### Login
@@ -67,15 +67,12 @@ export SECRET_KEY=my_cust_secret_key
     * on_send_message()- Broadcasts the the message sent to all user in that channel, also broadcasts channels to view the updated message count
     * on_del_message()- Remove message by index number for the respective channel, also broadcasts channels to get the updated message count
 
-2. templates/layout.htm- Jinja 2 for templating and re-usability 
+2. templates/layout.htm- Jinja 2 for templating and re-usability
 3. templates/index.html- rendered at root, utilizes bootstrap, fontawesome, handlebars
 3. static/imgs/favicon.ico- required favicon.ico for the website
 4. static/style.scss- main sassy css used for the application
 5. static/style.css- compiled version of the scss
-6. static/main.js- JavaScript file which handles users interactions and emits it to Server
+6. static/main.js- JavaScript file which handles user interactions and emits it to Server
 7. requirements.txt- required libraries to be installed before running application
 8. README.md- this file
 9. knock_brush.mp3- sound file played when message is sent.  
-
-     
-                                 
