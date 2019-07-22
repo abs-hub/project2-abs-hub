@@ -1,0 +1,112 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Flack
+{% endblock %}
+
+{% block handlebars %}
+
+  <script id="channel_list_hb" type="text/x-handlebars-template">
+    {% raw %}{{#each channels}}
+    <li class="nav-item channel" data-cname="{{ @key }}">
+      <a class="nav-link"># {{@key}}</a><span class="message-num">{{ this.Messages.length }}</span>
+    </li>
+    {{/each}}{% endraw %}
+  </script>
+
+  <script id="channel_users_list_hb" type="text/x-handlebars-template">
+    {% raw %}{{#each users}}
+    <li class="channel">
+      <span>{{ this }}</span>
+    </li>
+    {{/each}}{% endraw %}
+  </script>
+
+  <script id="channel_messages_list_hb" type="text/x-handlebars-template">
+    {% raw %}{{#each messages}}
+    <div class="message">
+      <hr>
+      <span class="message_username">{{ this.user }}</span>
+      <span class="message_timestamp">{{ this.timestamp }}</span>
+      {{{del_button this.user this.idx}}}
+      <span class="message_content">{{ this.text }}</span>
+    </div>
+    {{/each}}{% endraw %}
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div class="modal fade" id="login_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Login</h5>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group ">
+              <label for="recipient-name" class="col-form-label">Username:</label>
+              <input type="text" class="form-control" name="username" id="username" placeholder="@username">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid h-100 d-flex flex-column">
+    <div class="header row">
+      <div class="dark col-md-3 col-6 rounded-right">
+        <span id="loggedin_username">Not Logged in</span>
+      </div>
+      <div class="channel-menu col-md-9 col-6">
+        <span class="channel-menu_name">
+
+        </span>
+      </div>
+    </div>
+    <div class="main row h-100">
+      <div class="col_left col-md-3 col-6 rounded-right">
+        <div class="listings_channels">
+          <h2 class="listings_header">Channels</h2>
+          <form class="form-inline form-row mb-2" id="new_channel">
+            <div class="form-group">
+              <input type="text" class="form-control mx-1" placeholder="New channel" required>
+            </div>
+            <div class="form-group">
+              <button id="channel-submit" class="btn newchannel-btn" id="channel-btn"><i class="fa fa-plus-square"></i>
+              </button>
+            </div>
+          </form>
+          <ul class="channel_list list-group" id="channels_list">
+
+          </ul>
+        </div>
+        <div class="listings_users">
+          <h2 class="listings_header">Channel users</h2>
+          <ul class="channel_list" id="user_list">
+
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-9 col-6" id="messages">
+
+      </div>
+    </div>
+
+    <div class="row footer">
+      <div class="col-md-3 col-6 rounded-right" id="user_menu">
+        <br>
+        <span id="user_logout"></span>
+      </div>
+      <div class="col-md-9 col-6">
+        <input class="input-box_text" id="message_box" type="text"/>
+      </div>
+    </div>
+  </div>
+  <audio id="myAudio" preload="none">
+    <source src="{{ url_for('static', filename='knock_brush.mp3') }}" type="audio/mpeg">
+    Audio not supported in this browser, please use latest chrome/firefox version.
+  </audio>
+{% endblock %}
