@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Connect to websocket
   const socket = io.connect(`${location.protocol}//${document.domain}:${location.port}`);
-  console.log(localStorage.getItem('username'))
   //If user not in local storage, open login form:
   if (!localStorage.getItem('username') || localStorage.getItem('username') === "") {
     //Listener for username keystrokes
@@ -66,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //Receive channels messages on joining channel
   socket.on('messages', (data) => {
-    console.log("messages received", data);
     const messages_list = document.querySelector('#messages');
     messages_list.innerHTML = channel_messages_list_hb({'messages': data});
     messages_list.scrollTop = messages_list.scrollHeight;
