@@ -61,7 +61,6 @@ def on_join(data):
     username = data['user']
     selected_channel = data["channel"].lower()
     build_channel_skeleton(selected_channel)
-    print(channels)
     join_room(selected_channel)
     users = channels[selected_channel]["Users"]
     if username not in users:
@@ -122,3 +121,18 @@ def on_del_message(data):
     refresh_indexes(messages)
     emit('message delete', messages, room=selected_channel)
     emit('channels', channels, broadcast=True)
+
+
+@socketio.on('logout')
+def logout_user(data):
+    """ Remove user from all channels but preserve
+        there message reference if they sign in with same
+        username again """
+
+    username = data["user"]
+    selected_channel = data["channel"]
+    for c in channels:
+        if username in channels[c]["Users"]:
+            channels[c]["Users"].remove(username)
+    if selected_channel is not None:
+        emit('users', channels[selected_channel]["Users"], room=selected_channel)

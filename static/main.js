@@ -1,5 +1,3 @@
-const usrStorage = window.localStorage;
-
 document.addEventListener('DOMContentLoaded', () => {
   //Templates for channels, users and messages
   const channel_list_hb = Handlebars.compile(document.querySelector('#channel_list_hb').innerHTML);
@@ -8,31 +6,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Connect to websocket
   const socket = io.connect(`${location.protocol}//${document.domain}:${location.port}`);
-
+  console.log(localStorage.getItem('username'))
   //If user not in local storage, open login form:
-  if (!usrStorage.getItem('username') || usrStorage.getItem('username') === "") {
-    //Listener for Login button
-    const login_modal = document.querySelector('#login_modal').querySelector('form');
-    login_modal.onsubmit = (e) => {
-      const formData = new FormData(e.target);
-      const new_user = formData.get('username').trim();
-      if (new_user && new_user !== "") {
-        usrStorage.setItem('username', new_user);
+  if (!localStorage.getItem('username') || localStorage.getItem('username') === "") {
+    //Listener for username keystrokes
+    let username_input = document.querySelector('#username');
+    username_input.addEventListener('keyup', (event) => {
+      const new_user = username_input.value;
+      if (event.key === "Enter" && new_user.length > 0) {
+        localStorage.setItem('username', new_user);
         document.querySelector('#loggedin_username').innerHTML = new_user;
-        // close the modal
         $('#login_modal').modal('hide');
         handle_logout();
-      } else {
-        alert("Username is required to proceed");
       }
-      return false
-    };
+    });
+
     //Show login modal
     $('#login_modal').modal('show');
 
   } else {
     $('#login_modal').modal('hide');
-    document.querySelector('#loggedin_username').innerHTML = usrStorage.getItem('username');
+    document.querySelector('#loggedin_username').innerHTML = localStorage.getItem('username');
     handle_logout();
   }
 
@@ -55,8 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
     //disable message input before join
     document.querySelector(".input-box_text").disabled = true;
     //join saved channel after page load
-    if (usrStorage.getItem('current_channel') && usrStorage.getItem('username')) {
-      join_channel(usrStorage.getItem('current_channel'));
+    if (localStorage.getItem('current_channel') && localStorage.getItem('username')) {
+      join_channel(localStorage.getItem('current_channel'));
     }
   });
 
@@ -86,8 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let username = data.username;
 
     //play sound only if user is viewing this channel
-    if (selected_channel == usrStorage.getItem('current_channel').toLowerCase() && usrStorage.getItem('username')
-        && username != usrStorage.getItem('username')) {
+    if (localStorage.getItem('current_channel') && selected_channel == localStorage.getItem(
+        'current_channel').toLowerCase() && localStorage.getItem('username') && username != localStorage.getItem(
+        'username')) {
       let playPromise = document.querySelector('#myAudio').play();
       if (playPromise !== undefined) {
         playPromise.then(_ => {
@@ -123,14 +118,18 @@ document.addEventListener('DOMContentLoaded', () => {
       logout_button.textContent = "Logout";
       logout_button.addEventListener('click', (e) => {
         e.preventDefault();
-        let loggedin_user = usrStorage.getItem('username');
-        let selected_channel = usrStorage.getItem('current_channel');
+        const loggedin_user = localStorage.getItem('username');
+        const selected_channel = localStorage.getItem('current_channel');
         if (loggedin_user) {
-          usrStorage.removeItem(loggedin_user);
+          localStorage.removeItem('username');
         }
         if (selected_channel) {
-          usrStorage.removeItem(selected_channel);
+          localStorage.removeItem('current_channel');
         }
+        document.querySelector('#loggedin_username').innerHTML = "Not Logged in";
+        socket.emit('logout', {
+          user: loggedin_user, channel: selected_channel
+        });
         $('#login_modal').modal('show');
       });
       //append this button to user_logout span
@@ -173,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#channels_list').querySelectorAll('li').forEach((item) => {
       item.addEventListener('click', event => {
         event.preventDefault();
-        if (usrStorage.getItem('current_channel') && usrStorage.getItem('current_channel').toLowerCase()
+        if (localStorage.getItem('current_channel') && localStorage.getItem('current_channel').toLowerCase()
             === item.dataset.cname) {
           return null
         }
@@ -183,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         item.classList.add('active');
       });
-      if (item.dataset.cname === usrStorage.getItem('current_channel')) {
+      if (item.dataset.cname === localStorage.getItem('current_channel')) {
         item.classList.add('active');
       }
     })
@@ -192,13 +191,13 @@ document.addEventListener('DOMContentLoaded', () => {
   //this method is called when the user clicks the channel link or creates new channel.
   function join_channel(channel) {
     // Leave current channel, if joined
-    if (usrStorage.getItem('current_channel') && usrStorage.getItem('current_channel').toLowerCase() != channel) {
+    if (localStorage.getItem('current_channel') && localStorage.getItem('current_channel').toLowerCase() != channel) {
       socket.emit('change channel',
-          {channel: usrStorage.getItem('current_channel'), user: usrStorage.getItem('username')});
+          {channel: localStorage.getItem('current_channel'), user: localStorage.getItem('username')});
     }
     //set local storage item to the channel joined/clicked by user
-    usrStorage.setItem('current_channel', channel.toLowerCase());
-    socket.emit('join channel', {channel: channel, user: usrStorage.getItem('username')});
+    localStorage.setItem('current_channel', channel.toLowerCase());
+    socket.emit('join channel', {channel: channel, user: localStorage.getItem('username')});
     // message input
     let message_input = document.querySelector('#message_box');
     message_input.disabled = false;
@@ -207,8 +206,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const timestamp = new Date().toString().substring(0, 15);
 
         socket.emit('submit message', {
-          channel: usrStorage.getItem('current_channel'),
-          user: usrStorage.getItem('username'),
+          channel: localStorage.getItem('current_channel'),
+          user: localStorage.getItem('username'),
           'timestamp': timestamp,
           text: message_input.value
         });
