@@ -3,13 +3,14 @@ import os
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
-MAX_MESSAGES = 100
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 socketio = SocketIO(app)
 
 # Define global variable channel and store information as a dict
 channels = {}
+
+MAX_MESSAGES = 100
 
 
 @app.route("/")
@@ -45,7 +46,6 @@ def new_channel(data):
 
     # Get new channel name and convert it to lower case
     channel_name = data["channel"].lower()
-
     # Ensure channel name is unique
     build_channel_skeleton(channel_name)
     emit('channels', channels, broadcast=True)
@@ -57,6 +57,7 @@ def on_join(data):
         read channel information and emit messages and
         users information for the current room """
 
+    # Get user information
     username = data['user']
     selected_channel = data["channel"].lower()
     build_channel_skeleton(selected_channel)
@@ -65,7 +66,6 @@ def on_join(data):
     users = channels[selected_channel]["Users"]
     if username not in users:
         users.append(username)
-
     messages = channels[selected_channel]["Messages"]
     emit('users', users, room=selected_channel)
     emit('messages', messages, room=selected_channel)
@@ -94,6 +94,7 @@ def on_send_message(data):
     """ Broadcast the the message sent to all user in that channel,
         also broadcast channels to view the updated message count """
 
+    # Get channel information
     selected_channel = data["channel"].lower()
     messages = channels[selected_channel]["Messages"]
     message_dict = {"user": data['user'], "timestamp": data['timestamp'], "text": data['text'], "idx": len(messages)}
